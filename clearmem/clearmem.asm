@@ -10,7 +10,7 @@
 .byte $00                ; no PRG-RAM (rarely used)
 .byte $00                ; TV System (0 = NTSC, 1 = PAL)
 .byte $00                ; no PRG-RAM
-.byte $00, $00, $00, $00 ; unused padding to complete 16 bytes of header
+.byte $00, $00, $00, $00, $00 ; unused padding to complete 16 bytes of header
 
 .segment "CODE"
 .org $8000   ; code always starts at this
@@ -24,7 +24,7 @@ RESET:                   ; always do these things when reset or start NES
 
     ;;;  TODO:  Loop all mem positions from $00 to $FF clearing them out
     lda #0               ; A = 0
-    ldx #$FF             ; X = $FF
+    ldx #$FE             ; X = $FF
 MemLoop:
     sta $0,x   ;  Store teh value of A (zero) into $0 + X , is like adding - take what is at $0, add whatever is in x
     dex        ; X--
