@@ -169,7 +169,7 @@ UpdateSpritePosition:
     ;---------------------------------------------
     ; TODO:
     ;---------------------------------------------
-    ; Set the 1st sprite X position to be XPos
+    ; Set the 1st sprite X position to be XPos (connect positino to XPos)
     ; Set the 3rd sprite X position to be XPos
     ; Set the 2nd sprite X position to be XPos + 8
     ; Set the 4th sprite X position to be XPos + 8
