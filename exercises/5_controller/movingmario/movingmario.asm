@@ -166,19 +166,22 @@ CheckUpButton:
 :
 
 UpdateSpritePosition:
-    ;---------------------------------------------
-    ; TODO:
-    ;---------------------------------------------
-    ; Set the 1st sprite X position to be XPos (connect positino to XPos)
-    ; Set the 3rd sprite X position to be XPos
-    ; Set the 2nd sprite X position to be XPos + 8
-    ; Set the 4th sprite X position to be XPos + 8
-    ;---------------------------------------------
-    ; Set the 1st sprite Y position to be YPos
-    ; Set the 2nd sprite Y position to be YPos
-    ; Set the 3rd sprite Y position to be YPos + 8
-    ; Set the 4th sprite Y position to be YPos + 8
-    ;---------------------------------------------
+    lda XPos
+    sta $0203 ; Set the 1st sprite X position to be XPos (connect positino to XPos)
+    sta $020B ; Set the 3rd sprite X position to be XPos
+    clc
+    adc #8
+    sta $0207  ; Set the 2nd sprite X position to be XPos + 8
+    sta $020F  ; Set the 4th sprite X position to be XPos + 8
+   
+    lda YPos
+    sta $0200      ; Set the 1st sprite Y position to be YPos
+    sta $0204     ; Set the 2nd sprite Y position to be YPos
+    clc
+    adc #8         
+    sta $0208     ; Set the 3rd sprite Y position to be YPos + 8  
+    sta $020C     ; Set the 4th sprite Y position to be YPos + 8
+
 
     lda Frame                ; Increment Clock60 every time we reach 60 frames (NTSC = 60Hz)
     cmp #60                  ; Is Frame equal to #60?
