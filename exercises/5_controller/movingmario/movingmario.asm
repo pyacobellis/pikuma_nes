@@ -165,7 +165,7 @@ CheckUpButton:
     dec YPos                 ; Y--
 :
 
-UpdateSpritePosition:
+UpdateSpritePosition:   ; use this to update the sprite position
     lda XPos
     sta $0203 ; Set the 1st sprite X position to be XPos (connect positino to XPos)
     sta $020B ; Set the 3rd sprite X position to be XPos
