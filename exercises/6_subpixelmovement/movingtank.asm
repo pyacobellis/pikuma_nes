@@ -168,6 +168,7 @@ CheckUpButton:
     ;; TODO:
 EndInputCheck:
 
+;TODO - this UpdatesSpritePosition is very important
 UpdateSpritePosition:
     lda XVel
     clc
