@@ -156,6 +156,29 @@ ControllerInput:
     jsr ReadControllers      ; Jump to the subroutine that reads the controller buttons
 
 CheckRightButton:
+    lda Buttons
+    and #BUTTON_RIGHT    ; checking if right button pressed
+    beq NotRight
+    ;; right is pressed code chunk
+        lda XVel
+        clc
+        adc #ACCEL      ;add acceleration to velocity
+        cmp #MAXSPEED   ;
+        bcc :+
+            lda #MAXSPEED ; 
+        :
+        sta XVel
+        jmp CheckLeftButton
+    NotRight:
+    ;; right is not pressed code chunk
+        lda XVel
+        cmp #BRAKE
+        bcs :+
+            lda #BRAKE+1
+        :
+        sbc #BRAKE
+        sta XVel
+
     ;; TODO:
     ;; If I press right, I want to increase the velocity by the ACCEL
     ;; If I am not pressing right, I need to brake the movement using BRAKE
