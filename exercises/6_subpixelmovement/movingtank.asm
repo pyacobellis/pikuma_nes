@@ -12,6 +12,9 @@ YPos:       .res 2           ; Player Y position (8.8 fixed-point math) - Yhi + 
 XVel:       .res 1           ; Player X (signed) speed in pixels per 256 frames
 YVel:       .res 1           ; Player Y (signed) speed in pixels per 256 frames
 
+AnimFrame:  .res 1           ; Stores 0 or 1
+TileOffset: .res 1           ;  +0 or +4
+
 Frame:      .res 1           ; Counts frames
 Clock60:    .res 1           ; Counter that increments per second (60 frames)
 BgPtr:      .res 2           ; Pointer to background address - 16bits (lo,hi)
@@ -112,6 +115,9 @@ InitVariables:
     lda #0
     sta Frame                ; Frame = 0
     sta Clock60              ; Clock60 = 0
+
+    sta AnimFrame
+    sta TileOffset
 
     lda #20
     sta XVel                 ; XVel is 20 pixels per 256 frames
@@ -246,6 +252,38 @@ DrawSpriteTile:
     adc #8
     sta $0208                ; Set the 3rd sprite Y position to be YPos + 8
     sta $020C                ; Set the 4th sprite Y position to be YPos + 8
+
+    lda #0
+    sta TileOffset
+    lda XPos+1 
+    and #%000000001
+    beq :+
+        lda #4
+        sta TileOffset
+    :
+
+    lda #$18
+    clc
+    adc TileOffset
+    sta $201
+
+    lda #$1A
+    clc
+    adc TileOffset
+    sta $205
+
+    lda #$19
+    clc
+    adc TileOffset
+    sta $209
+
+    lda #$1B
+    clc
+    adc TileOffset
+    sta $20D
+
+
+
 
     lda Frame                ; Increment Clock60 every time we reach 60 frames (NTSC = 60Hz)
     cmp #60                  ; Is Frame equal to #60?
