@@ -9,8 +9,8 @@ Buttons:    .res 1           ; Pressed buttons (A|B|Select|Start|Up|Dwn|Lft|Rgt)
 XPos:       .res 2           ; Player X position (8.8 fixed-point math) - Xhi + Xlo/256 pixels
 YPos:       .res 2           ; Player Y position (8.8 fixed-point math) - Yhi + Ylo/256 pixels
 
-XVel:       .res 1           ; Player X speed in pixels per 256 frames
-YVel:       .res 1           ; Player Y speed in pixels per 256 frames
+XVel:       .res 1           ; Player X (signed) speed in pixels per 256 frames
+YVel:       .res 1           ; Player Y (signed) speed in pixels per 256 frames
 
 Frame:      .res 1           ; Counts frames
 Clock60:    .res 1           ; Counter that increments per second (60 frames)
@@ -161,30 +161,56 @@ CheckRightButton:
     beq NotRight
     ;; right is pressed code chunk
         lda XVel
-        clc
-        adc #ACCEL      ;add acceleration to velocity
-        cmp #MAXSPEED   ;
-        bcc :+
-            lda #MAXSPEED ; 
-        :
-        sta XVel
-        jmp CheckLeftButton
+        bmi NotRight        ; Bypassing if velcoity is negative
+            clc
+            adc #ACCEL      ;add acceleration to velocity
+            cmp #MAXSPEED   ;
+            bcc :+
+                lda #MAXSPEED ; 
+            :
+            sta XVel
+            jmp CheckLeftButton
     NotRight:
     ;; right is not pressed code chunk
         lda XVel
-        cmp #BRAKE
-        bcs :+
-            lda #BRAKE+1
-        :
-        sbc #BRAKE
-        sta XVel
+        bmi CheckLeftButton  ; Skip if velocity is negative
+            cmp #BRAKE
+            bcs :+
+                lda #BRAKE+1
+            :
+            sbc #BRAKE
+            sta XVel
 
     ;; TODO:
     ;; If I press right, I want to increase the velocity by the ACCEL
     ;; If I am not pressing right, I need to brake the movement using BRAKE
 
 CheckLeftButton:
-    ;; TODO
+    lda Buttons
+    and #BUTTON_LEFT
+    beq NotLeft
+        lda XVel
+        beq :+
+            bpl NotLeft
+        :
+        sec
+        sbc #ACCEL
+        cmp #256-MAXSPEED
+        bcs :+
+            lda #256-MAXSPEED
+        :
+        sta XVel
+        jmp CheckDownButton
+    NotLeft:
+        lda XVel
+        bpl CheckDownButton
+        cmp #256-BRAKE
+        bcc :+
+            lda #256-BRAKE
+        :
+        adc #BRAKE
+        sta XVel
+
 CheckDownButton:
     ;; TODO:
 CheckUpButton:
@@ -194,6 +220,9 @@ EndInputCheck:
 ;TODO - this UpdatesSpritePosition is very important
 UpdateSpritePosition:
     lda XVel
+    bpl :+
+        dec XPos+1
+    :
     clc
     adc XPos                 ; Add the velocity to the X position lo-byte
     sta XPos
